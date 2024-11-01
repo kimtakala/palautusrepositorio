@@ -1,5 +1,5 @@
 import unittest
-from statistics_service import StatisticsService
+from statistics_service import StatisticsService, SortBy
 from player import Player
 
 class PlayerReaderStub:
@@ -27,3 +27,12 @@ class TestStatisticsService(unittest.TestCase):
 
     def test_top(self):
         self.stats.top(2)
+
+    def test_top_points(self):
+        self.stats.top(2, SortBy.POINTS)
+
+    def test_top_goals(self):
+        self.stats.top(2, SortBy.GOALS)
+
+    def test_top_assists(self):
+        self.stats.top(2, SortBy.ASSISTS)
