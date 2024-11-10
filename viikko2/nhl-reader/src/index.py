@@ -2,30 +2,42 @@
 import requests
 from player import Player
 
+class PlayerReader():
+    'reading the players from json and transforming them into classes'
+    def __init__(self, url):
+        self.response = requests.get(url).json()
+
+    def get_players(self):
+        'getting players'
+        # "name":"Nils Lundkvist",
+        # "nationality":"SWE",
+        # "assists":17,
+        # "goals":2,
+        # "team":"DAL",
+        # "games":59,
+        # "id":8480878
+        return [Player(player_dict) for player_dict in self.response]
+
+class PlayerStats():
+    'presents the stats of the players'
+    def __init__(self, players):
+        self.players = players
+
+    def top_scorers_by_nationality(self, nationality):
+        'sort'
+        players = list(filter(lambda player: player.nationality == nationality, self.players))
+        players.sort(key=lambda player: player.points, reverse=True)
+        print(f'Players from {nationality}\n')
+        return players
+
+
 def main():
     'main function'
     url = "https://studies.cs.helsinki.fi/nhlstats/2023-24/players"
-    response = requests.get(url).json()
-
-    players = []
-    # "name":"Nils Lundkvist",
-    # "nationality":"SWE",
-    # "assists":17,
-    # "goals":2,
-    # "team":"DAL",
-    # "games":59,
-    # "id":8480878
-
-    for player_dict in response:
-        player = Player(player_dict)
-        if player.nationality == 'FIN':
-            players.append(player)
-
-    players.sort(key=lambda player: player.points, reverse=True)
-
-    print('Players from Finland')
-
-    for player in players:
+    reader = PlayerReader(url)
+    players = PlayerStats(reader.get_players())
+    top_finnish_scorers = players.top_scorers_by_nationality("FIN")
+    for player in top_finnish_scorers:
         print(f"""\
  {player.name:<20}\
  {player.team:<4}\
