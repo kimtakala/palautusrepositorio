@@ -21,6 +21,8 @@ def main():
         if player.nationality == 'FIN':
             players.append(player)
 
+    players.sort(key=lambda player: player.points, reverse=True)
+
     print('Players from Finland')
 
     for player in players:
