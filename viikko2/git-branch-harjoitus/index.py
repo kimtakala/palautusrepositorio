@@ -1,6 +1,8 @@
 """
 Docstring: practice branching
 """
+# tehdään alussa importit
+
 from logger import logger
 from summa import summa
 from erotus import erotus
