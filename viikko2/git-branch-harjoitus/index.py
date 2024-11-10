@@ -15,3 +15,4 @@ print(f"{summa(x, y)}")
 print(f"{erotus(x, y)}")
 
 logger("lopetetaan")
+print("goodbye!") # lisäys bugikorjaus-branchissa
