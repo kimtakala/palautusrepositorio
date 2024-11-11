@@ -1,5 +1,8 @@
 'importing the necessities'
 import requests
+from rich.console import Console
+from rich.table import Table
+from rich import print
 from player import Player
 
 class PlayerReader():
@@ -9,48 +12,87 @@ class PlayerReader():
 
     def get_players(self):
         'getting players'
-        # "name":"Nils Lundkvist",
-        # "nationality":"SWE",
-        # "assists":17,
-        # "goals":2,
-        # "team":"DAL",
-        # "games":59,
-        # "id":8480878
         return [Player(player_dict) for player_dict in self.response]
 
 class PlayerStats():
     'presents the stats of the players'
     def __init__(self, players):
         self.players = players
+        self.nationalities = \
+            "[" + "/".join(sorted(set(player.nationality for player in players))) + "]"
 
     def top_scorers_by_nationality(self, nationality):
-        'sort'
+        'sort and display top scorers for given nationality'
         players = list(filter(lambda player: player.nationality == nationality, self.players))
-        players.sort(key=lambda player: player.points, reverse=True)
-        print(f'Players from {nationality}\n')
-        return players
+        players.sort(key=lambda player: (-player.points, -player.goals, player.name))
 
+        table = Table(show_header=True, header_style="bold")
+        table.add_column("name")
+        table.add_column("team")
+        table.add_column("goals", justify="right")
+        table.add_column("assists", justify="right")
+        table.add_column("points", justify="right")
+
+        for player in players:
+            table.add_row(
+                f"[cyan]{player.name}[/cyan]",
+                f"[magenta]{player.team}[/magenta]",
+                f"[green]{player.goals}[/green]",
+                f"[green]{player.assists}[/green]",
+                f"[green]{player.goals + player.assists}[/green]"
+            )
+
+        print(f"\nTop scorers of {nationality} season 2024-25")
+        console = Console()
+        console.print(table)
+
+def get_season_data(seasons):
+    """Handle season selection and data retrieval."""
+    seasons_display = f"[{'/'.join(seasons)}]"
+
+    while True:
+        season = input(
+            f'Select season, leave empty to exit {seasons_display}: '
+        ).strip()
+
+        if not season:
+            return None
+
+        try:
+            url = f"https://studies.cs.helsinki.fi/nhlstats/{season}/players"
+            reader = PlayerReader(url)
+            return PlayerStats(reader.get_players())
+        except TypeError:
+            print("[red]Invalid season. Please try again.\n[/red]")
+
+def handle_nationality_selection(players):
+    """Handle nationality selection and display stats."""
+    while True:
+        nationality = input(
+            f'\nSelect nationality, leave empty to exit\n{players.nationalities}: '
+        ).strip()
+
+        if not nationality:
+            break
+
+        try:
+            players.top_scorers_by_nationality(nationality)
+        except ValueError:
+            print("[red]Invalid nationality. Please try again.[/red]")
 
 def main():
-    'main function'
-    url = "https://studies.cs.helsinki.fi/nhlstats/2023-24/players"
-    reader = PlayerReader(url)
-    players = PlayerStats(reader.get_players())
-    top_finnish_scorers = players.top_scorers_by_nationality("FIN")
-    for player in top_finnish_scorers:
-        print(f"""\
- {player.name:<20}\
- {player.team:<4}\
- {player.goals:<2} +\
- {player.assists:<2} =\
- {player.goals + player.assists}\
-""")
+    """Main function for NHL Statistics application."""
+    seasons = [
+        "2018-19", "2019-20", "2020-21",
+        "2021-22", "2022-23", "2023-24",
+        "2024-25"
+    ]
+
+    print("[italic magenta]NHL Statistics by nationality[/italic magenta]")
+
+    players = get_season_data(seasons)
+    if players:
+        handle_nationality_selection(players)
 
 if __name__ == "__main__":
     main()
-
-    # Players from FIN
-
-    # Mikko Rantanen       COL  55 + 50 = 105
-    # Aleksander Barkov    FLA  23 + 55 = 78
-    # Roope Hintz          DAL  37 + 38 = 75

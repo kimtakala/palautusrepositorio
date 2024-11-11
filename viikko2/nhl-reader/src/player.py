@@ -1,3 +1,4 @@
+'player module'
 class Player:
     '''
     A class for the NHL PLayers
@@ -20,7 +21,7 @@ class Player:
         self.points = self.assists + self.goals
         self.team = dicti['team']
         self.games = dicti['games']
-        self.id = dicti['id']
+        # self.id = dicti['id']
 
     def __str__(self):
         return self.name
