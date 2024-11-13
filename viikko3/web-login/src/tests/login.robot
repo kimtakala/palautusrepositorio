@@ -11,6 +11,12 @@ Login With Correct Credentials
     Submit Credentials
     Login Should Succeed
 
+Login With Nonexistent Username
+    Set Username  ellak
+    Set Password  321ellak
+    Submit Credentials
+    Login Should Fail With Message  Invalid username or password
+
 Login With Incorrect Password
     Set Username  kalle
     Set Password  kalle456
