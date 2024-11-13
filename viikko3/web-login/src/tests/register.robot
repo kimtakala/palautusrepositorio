@@ -54,6 +54,32 @@ Register With Valid Username And Invalid Password
     Submit Credentials
     Register Should Fail With Message  Password must not consist only of letters
 
+Login After Successful Registration
+    Set Username  kalle
+    Set Password  kalle123
+    Set Password Confirmation  kalle123
+    Submit Credentials
+    Register Should Succeed
+    Click Link  Continue to main page
+    Click Button  Logout
+    Login Page Should Be Open
+    Set Username  kalle
+    Set Password  kalle123
+    Log in
+    Login Should Succeed
+
+Login After Failed Registration
+    Set Username  kalle
+    Set Password  kalle123
+    Set Password Confirmation  kalle234
+    Submit Credentials
+    Register Should Fail With Message  Password and password confirmation dont match
+    Click Link  Login
+    Set Username  kalle
+    Set Password  kalle123
+    Log in
+    Login Should Fail With Message  Invalid username or password
+
 *** Keywords ***
 Reset Application And Go To Register Page
     Reset Application
@@ -71,6 +97,10 @@ Set Password Confirmation
     [Arguments]  ${password_confirmation}
     Input Password  password_confirmation  ${password_confirmation}
 
+
+Log In
+    Click Button  Login
+
 Submit Credentials
     Click Button  Register
 
@@ -80,4 +110,12 @@ Register Should Succeed
 Register Should Fail With Message
     [Arguments]  ${message}
     Register Page Should Be Open
+    Page Should Contain  ${message}
+
+Login Should Succeed
+    Main Page Should Be Open
+
+Login Should Fail With Message
+    [Arguments]  ${message}
+    Login Page Should Be Open
     Page Should Contain  ${message}

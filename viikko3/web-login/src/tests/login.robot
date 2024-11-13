@@ -42,7 +42,7 @@ Submit Credentials
 
 Set Username
     [Arguments]  ${username}
-    Input Text  username  ${username}
+    Input Text  username  Login Should Succeed${username}
 
 Set Password
     [Arguments]  ${password}
