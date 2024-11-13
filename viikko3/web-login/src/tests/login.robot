@@ -24,6 +24,11 @@ Login With Incorrect Password
     Login Should Fail With Message  Invalid username or password
 
 *** Keywords ***
+Reset Application Create User And Go To Login Page
+    Reset Application
+    Create User  kalle  kalle123
+    Go To Login Page
+
 Login Should Succeed
     Main Page Should Be Open
 
@@ -42,9 +47,3 @@ Set Username
 Set Password
     [Arguments]  ${password}
     Input Password  password  ${password}
-
-*** Keywords ***
-Reset Application Create User And Go To Login Page
-    Reset Application
-    Create User  kalle  kalle123
-    Go To Login Page
