@@ -23,6 +23,10 @@ class TennisGame:
         else:
             score = "Deuce"
         return score
+        
+    def mid_game(self):
+        scores = ["Love", "Fifteen", "Thirty", "Fourty"]
+        return scores[self.player1_score] + "-" + scores[self.player2_score]
 
     def late_game(self) -> str:
         player1_advantage = self.player1_score - self.player2_score
@@ -35,10 +39,6 @@ class TennisGame:
         else:
             score = "Win for player2"
         return score
-        
-    def mid_game(self):
-        scores = ["Love", "Fifteen", "Thirty", "Fourty"]
-        return scores[self.player1_score] + "-" + scores[self.player2_score]
 
     def get_score(self):
         # tie handler
