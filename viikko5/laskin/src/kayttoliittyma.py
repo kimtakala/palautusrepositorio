@@ -11,13 +11,21 @@ class Komento(Enum):
 
 
 class Muisti:
-    edellinen_olio = None
-    edellinen_arvo = None
+    _edelliset_oliot = []
+    _edelliset_arvot = []
 
     @classmethod
-    def update(cls, olio, arvo):
-        cls.edellinen_olio = olio
-        cls.edellinen_arvo = arvo
+    def paivita(cls, olio: object, arvo: int):
+        cls._edelliset_oliot.append(olio)
+        cls._edelliset_arvot.append(arvo)
+    
+    @classmethod
+    def kumous_elementit(cls) -> tuple[object, int]:
+        try:
+            return cls._edelliset_oliot.pop(), cls._edelliset_arvot.pop()
+        except IndexError:
+            return None, None
+
 
 
 class KomentoPohja:
@@ -26,8 +34,8 @@ class KomentoPohja:
         self._lue_syote = lue_syote
         self._muisti = Muisti()
 
-    def muisti_paivita(self, olio=None, arvo=None):
-        self._muisti.update(olio, arvo)
+    def muisti_paivita(self, olio, arvo):
+        self._muisti.paivita(olio, arvo)
 
 
 class Summa(KomentoPohja):
@@ -35,19 +43,16 @@ class Summa(KomentoPohja):
         self._sovelluslogiikka.plus(syote := self._lue_syote())
         self.muisti_paivita(self, syote)
 
-    def kumoa(self):
-        self._sovelluslogiikka.miinus(self._muisti.edellinen_arvo)
-        self.muisti_paivita()
-
+    def kumoa(self, arvo):
+        self._sovelluslogiikka.miinus(arvo)
 
 class Erotus(KomentoPohja):
     def suorita(self):
         self._sovelluslogiikka.miinus(syote := self._lue_syote())
         self.muisti_paivita(self, syote)
 
-    def kumoa(self):
-        self._sovelluslogiikka.plus(self._muisti.edellinen_arvo)
-        self.muisti_paivita()
+    def kumoa(self, arvo):
+        self._sovelluslogiikka.plus(arvo)
 
 
 class Nollaus(KomentoPohja):
@@ -56,16 +61,14 @@ class Nollaus(KomentoPohja):
         self._sovelluslogiikka.nollaa()
         self.muisti_paivita(self, tila)
 
-    def kumoa(self):
-        self._sovelluslogiikka.aseta_arvo(self._muisti.edellinen_arvo)
-        self.muisti_paivita()
-
+    def kumoa(self, arvo):
+        self._sovelluslogiikka.aseta_arvo(arvo)
 
 class Kumoa(KomentoPohja):
     def suorita(self):
-        self._muisti.edellinen_olio.kumoa()
-        self.muisti_paivita()
-
+        olio, arvo = self._muisti.kumous_elementit()
+        if olio:
+            olio.kumoa(arvo)
 
 class Kayttoliittyma:
     def __init__(self, sovelluslogiikka: Sovelluslogiikka, root):
